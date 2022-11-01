@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    StockSearch
+{% endblock %}
+
+{% block main %}
+
+<h2>Stock <strong>{{ result.name }}</strong></h2>
+
+<div>
+    Symbol: <b>{{ result.symbol }}</b>
+</div>
+
+<div>
+    Price: <b>{{ result.price | usd }}</b>
+</div>
+<div>
+    <small><a href="/quote">Check other stock</a></small>
+</div>
+{% endblock %}

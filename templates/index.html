@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    CS50 Finance
+{% endblock %}
+
+{% block main %}
+
+    <div>
+        <h2>Hello, <b>{{ user }}</b>!</h2>
+    </div>
+
+    <div>
+        <h3>Current history:</h3>
+        {{ data }}
+
+        <br>
+
+        <h4>Test</h4>
+
+        {{ stocks }}
+
+        <hr>
+
+        <h3>Current holdings:</h3>
+
+        <br>
+        
+        <table class="table">
+            <tr>
+                <th>Stock symbol</th>
+                <th>Amount of stocks</th>
+                <th>Current price</th>
+                <th>Total value</th>
+            </tr>
+            {% for object in objects %}
+                <tr>
+                    <td>{{ object.symbol }}</td>
+                    <td>{{ object.amount }} </td>
+                    <td>{{ object.price | usd }}</td>
+                    <td>{{ object.total | usd }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        <hr>
+
+        <div>
+            Current cash: <b>{{ cash | usd }}</b>
+        </div>
+
+        <br>
+
+        <div>
+            Grand total: <b>{{ total | usd }}</b>
+        </div>
+
+    </div>
+
+{% endblock %}
