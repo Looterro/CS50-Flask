@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    History
+{% endblock %}
+
+{% block main %}
+
+<div>
+    <h2>History of placed orders:</h2>
+</div>
+
+<div>
+    {% if orders != [] %}
+
+            <hr>
+
+            <table class="table">
+                <tr>
+                    <th>Stock Symbol</th>
+                    <th>Amount of Stocks Processed</th>
+                    <th>Bought/Sold for</th>
+                    <th>Date and Time</th>
+                </tr>
+                {% for order in orders %}
+                    <tr>
+                        <td>{{ order.symbol }}</td>
+                        <td>{{ order.shares }} </td>
+                        <td>{{ order.price | usd }}</td>
+                        <td>{{ order.datetime }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+
+            <hr>
+        {% else %}
+
+        <div>
+            <p>No orders yet!</p>
+        </div>
+
+        {% endif %}
+</div>
+
+
+{% endblock %}

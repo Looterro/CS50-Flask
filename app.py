@@ -45,12 +45,8 @@ def after_request(response):
 @login_required
 def index():
     """Show portfolio of stocks"""
-    
-    
-    user = db.execute("SELECT * FROM users WHERE id = ?", session["user_id"])[0]['username']
-    cash = db.execute("SELECT * FROM users WHERE id = ?", session["user_id"])[0]['cash']
 
-    data = db.execute("SELECT * FROM orders WHERE username = ?", user)
+    cash = db.execute("SELECT * FROM users WHERE id = ?", session["user_id"])[0]['cash']
 
     # Get all the users stocks and their amount
     stocks = db.execute("SELECT symbol, SUM (shares) FROM orders WHERE username = ? GROUP BY symbol", user)
@@ -75,7 +71,7 @@ def index():
     for object in objects:
         total += object["price"] * object["amount"]
 
-    return render_template("index.html", data=data, stocks=stocks, user=user, objects=objects, total=total, cash=cash)
+    return render_template("index.html", stocks=stocks, objects=objects, total=total, cash=cash)
 
 
 
@@ -128,7 +124,11 @@ def buy():
 @login_required
 def history():
     """Show history of transactions"""
-    return apology("TODO")
+
+    user = db.execute("SELECT * FROM users WHERE id = ?", session["user_id"])[0]['username']
+    orders = db.execute("SELECT * FROM orders WHERE username = ?", user)
+
+    return render_template("history.html", orders=orders)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -288,5 +288,4 @@ def sell():
 
     else:
 
-        stock = db.execute("SELECT symbol, SUM (shares) FROM orders WHERE username = ? AND symbol = ? GROUP BY symbol", user, "AAPL")[0]["SUM (shares)"]
-        return render_template("sell.html", cash=cash, objects=objects, stock=stock)
+        return render_template("sell.html", cash=cash, objects=objects)
