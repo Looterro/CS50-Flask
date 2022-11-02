@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Sell
+{% endblock %}
+
+{% block main %}
+
+<div>
+    <h2>Available funds: <b>{{ cash | usd }}</b></h2>
+</div>
+
+<div>
+    <form action="/sell" method="post">
+        <div class="mb-3">
+            <select name="symbol" class="form-control mx-auto w-auto" id="sell-symbol">
+                <option disabled selected value="">Choose Stock Symbol</option>
+                {% for object in objects %}
+                    <option value="{{ object }}">{{ object }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="sell-amount" name="shares" placeholder="Amount of shares" type="text">
+        </div>
+        <button class="btn btn-primary" type="submit">SELL</button>
+    </form>
+</div>
+
+{{ stock }}
+
+{% endblock %}

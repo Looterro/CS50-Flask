@@ -20,30 +20,32 @@
 
         {{ stocks }}
 
-        <hr>
+        {% if objects != [] %}
+            <hr>
 
-        <h3>Current holdings:</h3>
+            <h3>Current holdings:</h3>
 
-        <br>
-        
-        <table class="table">
-            <tr>
-                <th>Stock symbol</th>
-                <th>Amount of stocks</th>
-                <th>Current price</th>
-                <th>Total value</th>
-            </tr>
-            {% for object in objects %}
+            <br>
+
+            <table class="table">
                 <tr>
-                    <td>{{ object.symbol }}</td>
-                    <td>{{ object.amount }} </td>
-                    <td>{{ object.price | usd }}</td>
-                    <td>{{ object.total | usd }}</td>
+                    <th>Stock symbol</th>
+                    <th>Amount of stocks</th>
+                    <th>Current price</th>
+                    <th>Total value</th>
                 </tr>
-            {% endfor %}
-        </table>
+                {% for object in objects %}
+                    <tr>
+                        <td>{{ object.symbol }}</td>
+                        <td>{{ object.amount }} </td>
+                        <td>{{ object.price | usd }}</td>
+                        <td>{{ object.total | usd }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
 
-        <hr>
+            <hr>
+        {% endif %}
 
         <div>
             Current cash: <b>{{ cash | usd }}</b>

@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Quote
+    Buy
 {% endblock %}
 
 {% block main %}
@@ -16,7 +16,7 @@
             <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="buy-symbol" name="symbol" placeholder="Input stock symbol" type="text">
         </div>
         <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto" id="buy-amount" name="shares" placeholder="Specify amount of shares" type="text">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="buy-amount" name="shares" placeholder="Amount of shares" type="text">
         </div>
         <button class="btn btn-primary" type="submit">BUY</button>
     </form>

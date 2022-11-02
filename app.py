@@ -50,10 +50,10 @@ def index():
     user = db.execute("SELECT * FROM users WHERE id = ?", session["user_id"])[0]['username']
     cash = db.execute("SELECT * FROM users WHERE id = ?", session["user_id"])[0]['cash']
 
-    data = db.execute("SELECT * FROM buy WHERE username = ?", user)
+    data = db.execute("SELECT * FROM orders WHERE username = ?", user)
 
     # Get all the users stocks and their amount
-    stocks = db.execute("SELECT symbol, SUM (shares) FROM buy WHERE username = ? GROUP BY symbol", user)
+    stocks = db.execute("SELECT symbol, SUM (shares) FROM orders WHERE username = ? GROUP BY symbol", user)
 
     # Return a dictionary with values required to display all the bought stocks and their current prices
     objects = []
@@ -61,13 +61,16 @@ def index():
 
     for stock in stocks:
         item = lookup(stock["symbol"])
-        object = {
-            "symbol": stock["symbol"],
-            "price": item["price"],
-            "amount": stock["SUM (shares)"],
-            "total": stock["SUM (shares)"] * item["price"],
-        }
-        objects.append(object)
+
+        # Do not display a stock if no longer holding any shares
+        if not stock["SUM (shares)"] == 0:
+            object = {
+                "symbol": stock["symbol"],
+                "price": item["price"],
+                "amount": stock["SUM (shares)"],
+                "total": stock["SUM (shares)"] * item["price"],
+            }
+            objects.append(object)
 
     for object in objects:
         total += object["price"] * object["amount"]
@@ -108,7 +111,7 @@ def buy():
             time = datetime.now().strftime("%m/%d/%Y %H:%M:%S")
 
             # Update "buy" table with purchase
-            db.execute("INSERT INTO buy (datetime, username, symbol, shares, price) VALUES (?, ?, ?, ?, ?)", time, user, symbol, shares, result['price'])
+            db.execute("INSERT INTO orders (datetime, username, symbol, shares, price, type) VALUES (?, ?, ?, ?, ?, ?)", time, user, symbol, shares, result['price'], "BUY")
 
             return redirect("/")
         
@@ -232,4 +235,58 @@ def register():
 @login_required
 def sell():
     """Sell shares of stock"""
-    return apology("TODO")
+
+    user = db.execute("SELECT * FROM users WHERE id = ?", session["user_id"])[0]['username']
+    cash = db.execute("SELECT * FROM users WHERE id = ?", session["user_id"])[0]["cash"]
+    current_stocks = db.execute("SELECT symbol, SUM (shares) FROM orders WHERE username = ? GROUP BY symbol", user)
+
+    objects = []
+
+    # Do not display a stock if no longer holding any shares
+    for stock in current_stocks:
+        if not stock["SUM (shares)"] == 0:
+            objects.append(stock["symbol"])
+
+    if request.method == "POST":
+        
+        symbol = request.form.get("symbol")
+        shares = int(request.form.get("shares"))
+        result = lookup(symbol)
+
+        # Get all the users stocks and their amount
+        amount_shares = int(db.execute("SELECT symbol, SUM (shares) FROM orders WHERE username = ? AND symbol = ? GROUP BY symbol", user, symbol)[0]["SUM (shares)"])
+
+        if shares < 0:
+            return apology("Must provide a positive number")
+
+        if result == None:
+            return apology("Invalid symbol")
+        
+        #Check if users sell more stock than they own
+        if shares > amount_shares:
+            return apology("You dont have enough shares to fulfill the order")
+        
+        sell_income = result['price'] * shares
+
+        #Allow for the sell only if the stock is owned by the user
+        if symbol in objects:
+
+            # Deduct the cash from the user
+            db.execute("UPDATE users SET cash = ? WHERE id = ?", cash + sell_income, session["user_id"])
+
+            # Add current time to sell
+            time = datetime.now().strftime("%m/%d/%Y %H:%M:%S")
+
+            # Update "buy" table with sell order
+            db.execute("INSERT INTO orders (datetime, username, symbol, shares, price, type) VALUES (?, ?, ?, ?, ?, ?)", time, user, symbol, -shares, result['price'], "SELL")
+
+            return redirect("/")
+        
+        else:
+
+            return apology("You dont have any shares from that stock")
+
+    else:
+
+        stock = db.execute("SELECT symbol, SUM (shares) FROM orders WHERE username = ? AND symbol = ? GROUP BY symbol", user, "AAPL")[0]["SUM (shares)"]
+        return render_template("sell.html", cash=cash, objects=objects, stock=stock)
