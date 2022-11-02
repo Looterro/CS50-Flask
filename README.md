@@ -4,6 +4,10 @@ Harvard's CS50x Problem 9 - Stock market app. It's written using Flask framework
 
 Full specification: https://cs50.harvard.edu/x/2022/psets/9/finance/
 
+## Video Demo
+
+https://youtu.be/QB-f8lMKd0I
+
 ## Setup
 
 Clone this repository and change directory to CS50-Flask: 
