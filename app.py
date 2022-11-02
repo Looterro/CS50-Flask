@@ -47,7 +47,8 @@ def index():
     """Show portfolio of stocks"""
 
     cash = db.execute("SELECT * FROM users WHERE id = ?", session["user_id"])[0]['cash']
-
+    user = db.execute("SELECT * FROM users WHERE id = ?", session["user_id"])[0]['username']
+    
     # Get all the users stocks and their amount
     stocks = db.execute("SELECT symbol, SUM (shares) FROM orders WHERE username = ? GROUP BY symbol", user)
 
@@ -71,7 +72,7 @@ def index():
     for object in objects:
         total += object["price"] * object["amount"]
 
-    return render_template("index.html", stocks=stocks, objects=objects, total=total, cash=cash)
+    return render_template("index.html", stocks=stocks, objects=objects, total=total, cash=cash, user=user)
 
 
 
